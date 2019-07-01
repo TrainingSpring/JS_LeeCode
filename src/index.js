@@ -1363,3 +1363,64 @@ export let calPoints = function(ops) {
   }
   return tem.reduce((t,n)=>t+n);//计算最终结果
 };
+/**
+ * @Author: Training
+ * @desc 最大矩形
+ *  给定一个仅包含 0 和 1 的二维二进制矩阵，找出只包含 1 的最大矩形，并返回其面积。
+ *    示例:
+ *
+ *    输入:
+ *    [
+ *    ["1","0","1","0","0"],
+ *    ["1","0","1","1","1"],
+ *    ["1","1","1","1","1"],
+ *    ["1","0","0","1","0"]
+ *    ]
+ *    输出: 6
+ *
+ *    来源：力扣（LeetCode）
+ *    链接：https://leetcode-cn.com/problems/maximal-rectangle
+ * @think   首先将数组转换成柱状图的形式
+ *    如示例:
+ *     [
+ *       [ 1, 0, 1, 0, 0 ],
+ *       [ 2, 0, 2, 1, 1 ],
+ *       [ 3, 1, 3, 2, 2 ],
+ *       [ 4, 0, 0, 3, 0 ]
+ *     ]
+ *     每一行都是一个柱状图,然后按柱状图的解法来
+ *     自己的图解:  ./images/柱状图中的最大矩形.png
+ *     或者参考LeetCode 第 84 题
+ *
+ */
+Array.prototype.peek = function () {    // 给Array新增一个方法:  查询数组中的最后一个元素的值( pop 是弹出最后一个元素,会改变数组,这个函数只是查看最后一个元素,不会对数组做出改变)
+  let len = this.length;
+  return this[len-1];
+};
+export let maximalRectangle = function(matrix) {
+  let stack = [],maxarea = 0;  // 定义栈和最大面积的变量
+  for (let i = 0, len = matrix.length; i < len; i++) {        // 将数组变成柱形图
+    for (let j = 0, jlen = matrix[i].length; j < jlen; j++) {
+      if (i === 0 || matrix[i][j] === "0") {
+        matrix[i][j] = parseInt(matrix[i][j]);
+      }else if (matrix[i][j] === "1") {
+        matrix[i][j] = matrix[i-1][j]+1
+      }
+    }
+  }
+  /** 下面这个解法 可用于LeetCode 84题   : 柱状图中最大的矩形*/
+  matrix.forEach(item=>{ // 对柱形图数组进行遍历  下面的代码看图 ...
+    stack = [-1];
+    let  len = item.length;
+    for (let i = 0; i < len; i++) {
+      while (stack.peek() !== -1 && item[i]<item[stack.peek()]){
+        maxarea = Math.max(maxarea,item[stack.pop()]*(i - stack.peek() - 1));
+      }
+      stack.push(i);
+    }
+    while (stack.peek() !== -1){
+      maxarea = Math.max(maxarea,item[stack.pop()]*((len) - stack.peek() - 1));
+    }
+  });
+  return maxarea;
+};

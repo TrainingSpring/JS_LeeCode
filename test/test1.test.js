@@ -21,7 +21,7 @@ import {
   sortArray,
   maximumGap,
   sortArrayByParityII,
-  findKthLargest, firstMissingPositive, restoreIpAddresses, findSubstring
+  findKthLargest, firstMissingPositive, restoreIpAddresses, findSubstring, maximalRectangle
 } from "../src";
 
 // test('for循环数据',()=>{
@@ -117,7 +117,17 @@ test('复原ip地址:',()=> {
   expect(restoreIpAddresses("25525511135",1))
   // 2,3,1,4,8,8,56
 })*/
-test('串联所有单词的子串:',()=> {
+/*test('串联所有单词的子串:',()=> {
   expect(findSubstring("ffffffffff",["fff","fff"]))
   // 2,3,1,4,8,8,56
+})*/
+
+test('最大矩形:',()=> {
+  expect(maximalRectangle([
+    ["1","0","1","0","0"],
+    ["1","0","1","1","1"],
+    ["1","1","1","1","1"],
+    ["1","1","1","1","1"],
+    ["1","0","0","1","0"]
+  ])).toBe(10);
 })
