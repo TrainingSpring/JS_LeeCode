@@ -1,4 +1,93 @@
 /***********************************************************数组类***********************************************************************/
+//  基础方法
+/**
+ * @Author: Training
+ * @desc 反转数组的指定范围
+ * @params arr,start,end
+ */
+let reverse = (arr, start, end) => {
+  let tem;
+  while (start < end) {
+    tem = arr[start];
+    arr[start] = arr[end];
+    arr[end] = tem;
+    start++;
+    end--;
+  }
+};
+
+/**
+ * @Author: Training
+ * @desc 字符串分割
+ * @params
+ */
+function slice(arr, start, end = arr.length) {
+  let tem = "";
+  while (start < end) {
+    tem += arr[start];
+    start++;
+  }
+  return tem;
+}
+
+/**
+ * @Author: Training
+ * @desc 数组拼接成字符串
+ * @params
+ */
+function join(arr, flag = ",") {
+  let tem = "";
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (i !== len - 1) {
+      tem += arr[i] + flag;
+    } else {
+      tem += arr[i];
+    }
+  }
+  return tem;
+}
+
+/**
+ * @Author: Training
+ * @desc 字符串分割成数组
+ * @params
+ */
+function split(s, flag) {
+  let len = s.length, i = 0, temp = [], str = "";
+  if (flag !== "") {
+    while (i < len) {
+      if (s[i] === flag) {
+        temp.push(str);
+        str = "";
+      } else str += s[i];
+      i++;
+    }
+    temp.push(str);
+  } else {
+    while (i < len) {
+      temp.push(s[i]);
+      i++;
+    }
+  }
+  return temp;
+}
+
+/**
+ * @Author: Training
+ * @desc removeRepet
+ *    去重
+ * @params
+ */
+function removeRepet(s, flag) {
+  let i = 0, len = s.length, str = "";
+  while (i < len) {
+    if (s[i] === flag && s[i - 1] === flag) {
+    } else str += s[i];
+    i++;
+  }
+  return str;
+}
+
 /**
  * @Author: Training
  * @desc
@@ -553,21 +642,27 @@ export let spiralOrder = function (matrix) {
  *
  */
 export let generate = function (numRows) {
-  if (numRows === 1) return [[1]];
-  else if (numRows === 0) return [];
   let temp = [[1], [1, 1]];
-  if (numRows === 2) return temp;
-  for (let i = 2; i < numRows; i++) {
-    temp[i] = [];
-    temp[i][0] = 1;
-    temp[i][i] = 1;
-    let k = 1;
-    for (let j = 0, len = temp[i - 1].length - 1; j < len; j++) {
-      temp[i][k] = temp[i - 1][j] + temp[i - 1][j + 1];
-      k++;
-    }
+  switch (numRows) {
+    case 0:
+      return [];
+    case 1:
+      return [[1]];
+    case 2:
+      return temp;
+    default:
+      for (let i = 2; i < numRows; i++) {
+        temp[i] = new Array();
+        temp[i][0] = 1;
+        temp[i][i] = 1;
+        let k = 1;
+        for (let j = 0, len = temp[i - 1].length - 1; j < len; j++) {
+          temp[i][k] = temp[i - 1][j] + temp[i - 1][j + 1];
+          k++;
+        }
+      }
+      return temp;
   }
-  return temp;
 };
 /**
  * @Author: Training
@@ -589,17 +684,17 @@ export let addBinary = function (a, b) {
     jin = 0,
     temp = "";
   while (a_len - 1 >= 0 || b_len - 1 >= 0) {
-    let _a = a[a_len-1]?parseInt(a[a_len-1]):0,
-      _b = b[b_len-1]?parseInt(b[b_len-1]):0,
+    let _a = a[a_len - 1] ? parseInt(a[a_len - 1]) : 0,
+      _b = b[b_len - 1] ? parseInt(b[b_len - 1]) : 0,
       sum = _a + _b + jin,
       mo = (sum) % 2;
     jin = Math.floor((sum) / 2);
     temp = `${mo}` + temp;
-    if (a_len>b_len && b_len < 0 && jin === 0){
-      temp = a.slice(0,a_len-1)+temp;
+    if (a_len > b_len && b_len < 0 && jin === 0) {
+      temp = a.slice(0, a_len - 1) + temp;
       a_len = -1
-    }else if(a_len<b_len && a_len < 0&& jin === 0){
-      temp = b.slice(0,b_len-1)+temp;
+    } else if (a_len < b_len && a_len < 0 && jin === 0) {
+      temp = b.slice(0, b_len - 1) + temp;
       b_len = -1
     }
     a_len--;
@@ -620,12 +715,12 @@ export let addBinary = function (a, b) {
  *    使用递归
  *
  */
-export let strStr = function(haystack, needle) {
-  if(needle.length<=0)return 0;
+export let strStr = function (haystack, needle) {
+  if (needle.length <= 0) return 0;
   let p = 0,
     len = needle.length;
-  let loopStr = (str)=>{
-    if(str.length<needle.length )return -1;
+  let loopStr = (str) => {
+    if (str.length < needle.length) return -1;
     if (str.slice(0, len) === needle) return p;
     else {
       p++;
@@ -636,6 +731,635 @@ export let strStr = function(haystack, needle) {
 };
 /**
  * @Author: Training
- * @desc 
- * @params 
+ * @desc  最长公共前缀
+ *    编写一个函数来查找字符串数组中的最长公共前缀。
+ *    如果不存在公共前缀，返回空字符串 ""。
+ *
+ *    示例 1:
+ *      输入: ["flower","flow","flight"]
+ *      输出: "fl"
+ * @think
+ *    试试贪婪算法?
  */
+export let longestCommonPrefix = function (strs) {
+  if (strs.length < 1) return "";
+  else if (strs.length === 1) return strs[0];
+  let temp = strs[0];
+  let tem = temp;
+  for (let i = 1, len = strs.length; i < len; i++) {
+    let min = 0;
+    let max = temp.length;
+    if (temp[0] !== strs[i][0]) return "";
+    if (strs[i].slice(0, temp.length) !== temp) {
+      let isComm = temp.slice(0, Math.ceil(max / 2));
+      let strsLen = strs[i].length;
+      while (true) {
+        if (temp.length > strsLen) {
+          if (temp.slice(0, strsLen) === strs[i]) {
+            temp = strs[i];
+            break;
+          } else {
+            temp = temp.slice(0, strsLen);
+            max = strs[i].length;
+            isComm = temp.slice(0, Math.ceil(max / 2));
+          }
+        } else {
+          if (temp === strs[i].slice(0, temp.length)) {
+            break;
+          } else if (isComm === strs[i].slice(0, isComm.length)) {
+            min = isComm.length;
+            max = Math.ceil(max * 0.75);
+            if (min >= max) {
+              if (tem.length > 0 && tem.slice(0, max + 1) === strs[i].slice(0, max + 1)) {
+                temp = tem.slice(0, max + 1);
+              } else {
+                temp = isComm;
+                isComm = temp.slice(0, max + 1)
+              }
+              tem = temp;
+              break;
+            } else {
+              max = Math.ceil(isComm.length);
+            }
+          } else {
+            max = Math.ceil(isComm.length);
+            isComm = temp.slice(0, Math.ceil(max / 2));
+            console.log(min, max, temp, tem, isComm);
+          }
+        }
+      }
+    }
+  }
+  return temp;
+};
+/**
+ * @Author: Training
+ * @desc 数组拆分 I
+ *    给定长度为 2n 的数组,
+ *    你的任务是将这些数分成 n 对,
+ *    例如 (a1, b1), (a2, b2), ..., (an, bn) ，
+ *    使得从1 到 n 的 min(ai, bi) 总和最大。
+ *    题意:  最开始没看懂
+ *        意思就是,给定一个数组,长度为2n,也就是偶数!
+ *        然后将数分组,
+ *        首先每两个一组
+ *        每组最小的相加
+ *        看怎样分组得出的和最大,
+ *        得出的最大的值是对少
+ * @think
+ *    为了使得得出的值最大,
+ *    则较小的值不要比较大的值小太多,
+ *    保证每组较小与较大的值接近,
+ *    才能保证最终的值最大
+ *    可以使用排序法,来保证每组数之间的差值最小
+ */
+export let arrayPairSum = function (nums) {
+  nums = nums.sort((a, b) => a - b);
+  let i = 0;
+  let j = nums.length - 1;
+  // let group = [];
+  let count = 0;
+  while (j > i) {
+    // group[i/2] = [nums[i],nums[i+1]];
+    // group[((j-1)/2)] = [nums[j-1],nums[j]];
+    count += nums[i] + nums[j - 1];
+    if (j - 1 === i) {
+      count -= nums[j - 1];
+    }
+    i += 2;
+    j -= 2;
+  }
+  return count;
+};
+/**
+ * @Author: Training
+ * @desc
+ *    给定一个已按照升序排列 的有序数组，找到两个数使得它们相加之和等于目标数。
+ *    函数应该返回这两个下标值 index1 和 index2，其中 index1 必须小于 index2。
+ *    说明:
+ *      返回的下标值（index1 和 index2）不是从零开始的。
+ *      你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+ *    示例:
+ *      输入: numbers = [2, 7, 11, 15], target = 9
+ *      输出: [1,2]
+ *      解释: 2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。
+ * @params
+ */
+export let twoSum = function (numbers, target) {
+  let len = numbers.length;
+  if (numbers[0] > target) return [];
+  for (let i = 0; i < len; i++) {
+    for (let j = len - 1; j > i; j--) {
+      if (numbers[i] + numbers[j] === target) {
+        return [i + 1, j + 1]
+      } else if (numbers[j] < target - numbers[i]) {
+        break;
+      }
+    }
+  }
+  return [];
+};
+/**
+ * @Author: Training
+ * @desc 移除元素
+ *    给定一个数组 nums 和一个值 val，你需要原地移除所有数值等于 val 的元素，返回移除后数组的新长度。
+ *    不要使用额外的数组空间，你必须在原地修改输入数组并在使用 O(1) 额外空间的条件下完成。
+ *    元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+ *    示例:
+ *      给定 nums = [3,2,2,3], val = 3,
+ *      函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+ *      你不需要考虑数组中超出新长度后面的元素。
+ * @think
+ *    方法一:
+ *        使用单指针,使用js数组内置函数splice删除元素
+ *        如果当前指向的元素的值和val相同,则用splice去掉;
+ *    方法二:
+ *        双指针 ,通过for循环数组内所有的元素,如果当前指向的元素不和val元素相同
+ *        慢指针指向的值就是被赋值为当前指针指向的值,然后慢指针+1:
+ *        如:  慢指针i == 0;当前指针j == 0; val值是3  当前值:nums[j] = 2;  当前值不等于val,则nums[i] = nums[j](nums[0] = nums[0]);  i++;(for中的j++)
+ *            慢指针i == 1; 当前指针j == 1;val 值是3;; 当前值nums[j] = 3; 当前值等于val,则不作任何操作,j正常+1
+ *            慢指针i == 1;当前指针j == 2;val值是3;  当前值是nums[j] = 1;当前值不等于val,则 则nums[i] = nums[j](nums[1] = nums[2]);i++  for中j++;
+ *       按照此方法来,与val相同的值会被替换,因为不需要考虑数组中超出新长度后面的元素。所以后面的值不管,返回心得长度i就好了;
+ *   方法三:
+ *      双指针: 因为元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+ *      快指针指向元素当前位置,慢指针指向元素最后位置
+ *      所以,当前指针如果等于val的话,与最后的值交换位置即可,因为最后一个值一定是假值,所以慢指针-1;就不用再管最后一个值了,
+ *      如果不同时,当前指针才向后指(因为不能保证最后一位一定不与val不同,所以交换后,
+ *      还得和最后一位进行比较,此时的最后一位(慢指针指向的位置)已经向前移动了一位,所以可以继续做判断)
+ *
+ *
+ *
+ *   看不懂解释的时候看代码  |^v^|
+ */
+export let removeElement = function (nums, val) {
+  let i = 0,
+    len = nums.length;
+  //方法一:
+  while (1) {
+    if (nums[i] === val) nums.splice(i, 1);
+    else i++;
+    if (i >= nums.length) break;
+  }
+  return nums.length;
+  //方法二:
+  for (let j = 0; j < len; j++) {
+    if (nums[j] !== val) {
+      nums[i] = nums[j];
+      i++
+    }
+  }
+  return i;
+  //方法三:
+  while (i < len) {
+    if (nums[i] === val) {
+      nums[i] = nums[len - 1];
+      len--;
+    } else {
+      i++
+    }
+  }
+  return len;
+};
+/**
+ * @Author: Training
+ * @desc
+ *    找到二进制数组nums中连续1出现的最多的个数
+ * @param nums
+ * @returns {number}
+ */
+export let findMaxConsecutiveOnes = function (nums) {
+  //方法一:
+  let newNums = nums.join('').split("0");
+  let maxLen = 0;
+  for (let i = 0, len = newNums.length; i < len; i++) {
+    if (newNums[i].length > maxLen) maxLen = newNums[i].length;
+  }
+  return maxLen;
+};
+/**
+ * @Author: Training
+ * @desc  给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。(引用类型,直接改变nums)
+ *      示例 1:
+ *        输入: [1,2,3,4,5,6,7] 和 k = 3
+ *        输出: [5,6,7,1,2,3,4]
+ *      解释:
+ *        向右旋转 1 步: [7,1,2,3,4,5,6]
+ *        向右旋转 2 步: [6,7,1,2,3,4,5]
+ *        向右旋转 3 步: [5,6,7,1,2,3,4]
+ *
+ *      来源：力扣（LeetCode）
+ *      链接：https://leetcode-cn.com/problems/rotate-array
+ * @params
+ */
+export let rotate = function (nums, k) {
+  /**方法一: 移动最后一位到前面来+
+   *  空间复杂度: O(1)
+   *  时间复杂度: O(k*n)
+   * **/
+  // let len = nums.length;
+  // if (k === 0 || len === 1) return nums;
+  // let temp ;
+  // for (let j = 0; j < k; j++) {
+  //   for (let i = len - 1; i >= 0; i--) {
+  //     if (i === len-1){
+  //       temp = nums[i];
+  //       nums[i] = nums[i-1];
+  //     }else if(i === 0){
+  //       nums[0] = temp;
+  //     }else{
+  //       nums[i] = nums[i-1];
+  //     }
+  //   }
+  // }
+  /**方法二: 反转
+   * 时间复杂度: O(3n)   == O(n)
+   * 空间复杂度: O(1)
+   *    思路: 看数据:
+   *        如: nums = [0,1,2,3,4,5,6,7,8,9,10] k = 5
+   *            p = 5%nums.length == 5;  需求结果: [6,7,8,9,10,1,2,3,4,5]
+   *            反转全部数据 nums = [10,9,8,7,6,5,4,3,2,1]
+   *            反转指定位置数据 nums =[6,7,8,9,10,5,4,3,2,1]
+   *            反转剩余位置数据  nums = [6,7,8,9,10,1,2,3,4,5]
+   * **/
+  let len = nums.length,
+    p = k % len;
+  reverse(nums, 0, len - 1);
+  reverse(nums, 0, p - 1);
+  reverse(nums, p, len - 1);
+
+};
+/**
+ * @Author: Training
+ * @desc
+ * @params
+ */
+export let reverseWords = function (s) {
+  // 方法一: 使用js内置函数和正则表达式
+  s = s.replace(/\s+/g, " ").replace(/^\s/, "").replace(/\s$/, "");
+  // let tem = s.split(" ").reverse();
+  //方法二  自己实现split,rever,join
+  let tem = split(s, " ");
+  reverse(tem, 0, tem.length - 1);
+  return (join(tem, " "));
+};
+/**
+ * @Author: Training
+ * @desc 反转字符串中的单词 III
+ *   给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+ *   在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+ *    示例:
+ *      输入: "Let's take LeetCode contest"
+ *      输出: "s'teL ekat edoCteeL tsetnoc"
+ * @params
+ */
+export let reverseWords_3 = function (s) {
+  s = s.replace(/\s+/g, " ").replace(/^\s/, "").replace(/\s$/, "");
+  /* let temp = split(s," ");
+   for (let i = 0, len = temp.length; i < len; i++) {
+     temp[i] = temp[i].split("");
+     reverse(temp[i],0,temp[i].length-1);
+     temp[i] = join(temp[i],"");
+   }
+   return join(temp," ")*/
+  let temp = "";
+  let str = "";
+  for (let i = 0, len = s.length; i < len; i++) {
+    if (s[i] === " " && s[i - 1] && s[i - 1] !== " ") {
+      temp = temp + " " + str;
+      str = "";
+    } else if (s[i] !== " ") {
+      str = s[i] + str;
+    }
+  }
+  temp += (" " + str)
+  return temp;
+};
+/**
+ * @Author: Training
+ * @desc 数组排序
+ *    给定一个整数数组 nums，将该数组升序排列。
+ *    示例 1：
+ *    输入：[5,2,3,1]
+ *    输出：[1,2,3,5]
+ * @think
+ *  1. 冒泡排序:  从左到右遍历,每两个比较,大的后移
+ *  2. 选择排序:  从左到右遍历,如果有比当前元素小的,交换位置
+ */
+export let sortArray = function (nums) {
+  // 冒泡排序
+  /*let len = nums.length, i = len - 1, modify = false;
+  for (i; i >= 0; i--) {                          // O(n)
+    modify = false;
+    for (let p = 0; p < i; p++) {                 //O(n)
+      if (nums[p] > nums[p + 1]) {
+        let tem = nums[p];
+        nums[p] = nums[p+1];
+        nums[p+1] = tem;
+        modify = true;
+      }
+    }
+    if (modify === false) i = -1;
+  }*/
+  // 选择排序
+  let len = nums.length,p = 0;
+  for (let i = 0; i < len-1; i++) {
+    p = i;
+    for (let j = i + 1; j < len; j++)
+      if (nums[j] < nums[p]) p = j;
+    if (p !== i) {
+      let tem = nums[i];
+      nums[i] = nums[p];
+      nums[p] = tem;
+    }
+  }
+  return nums;
+};
+/**
+ * @Author: Training
+ * @desc 最大间距
+ *    给定一个无序的数组，找出数组在排序之后，相邻元素之间最大的差值。
+ *    如果数组元素个数小于 2，则返回 0。
+ *    示例 1:
+ *      输入: [3,6,9,1]
+ *      输出: 3
+ *      解释: 排序后的数组是 [1,3,6,9], 其中相邻元素 (3,6) 和 (6,9) 之间都存在最大差值 3。
+ *
+ *      来源：力扣（LeetCode）
+ *      链接：https://leetcode-cn.com/problems/maximum-gap
+ * @think
+ *    首先得排序
+ *    在排序过程中计算当前元素与前一个元素的差值,找到最大的差值
+ */
+export let maximumGap = function(nums) {
+  let len = nums.length,p = 0,max = 0;
+  if (len < 2) return 0;
+  for (let i = 0; i < len; i++) {
+    p = i;
+    for (let j = i + 1; j < len; j++)
+      if (nums[j] < nums[p]) p = j;
+    if (p !== i) {
+      let tem = nums[i];
+      nums[i] = nums[p];
+      nums[p] = tem;
+    }
+    if (i > 0) {
+      let c = nums[i] - nums[i-1];
+      max = max<c?c:max;
+    }
+  }
+  // 使用js自带排序
+  // let len = nums.length,max = 0;
+  // if (len < 2) return 0;
+  // nums.sort((a, b) => a - b)
+  // for(let i = 1;i<len;i++){
+  //   max = max<nums[i]-nums[i-1]?nums[i]-nums[i-1]:max;
+  // }
+  return max;
+};
+/**
+ * @Author: Training
+ * @desc 按奇偶排序数组 II
+ *    给定一个非负整数数组 A， A 中一半整数是奇数，一半整数是偶数。
+ *    对数组进行排序，以便当 A[i] 为奇数时，i 也是奇数；当 A[i] 为偶数时， i 也是偶数。
+ *    你可以返回任何满足上述条件的数组作为答案。
+ *    示例：
+ *      输入：[4,2,5,7]
+ *      输出：[4,5,2,7]
+ *      解释：[4,7,2,5]，[2,5,4,7]，[2,7,4,5] 也会被接受。
+ * @params
+ */
+export let sortArrayByParityII = function(A) {
+  let len = A.length,tem = new Array(len),e = 0, o = 1;
+  for (let i = 0; i < len; i++) {
+    if (A[i] % 2 === 0) {
+      tem[e] = A[i]
+      e+=2;
+    }else{
+      tem[o] = A[i]
+      o+=2;
+    }
+  }
+  return tem;
+};
+/**
+ * @Author: Training
+ * @desc  数组中的第K个最大元素
+ *    在未排序的数组中找到第 k 个最大的元素。
+ *    请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+ *    示例:
+ *      输入: [3,2,1,5,6,4] 和 k = 2
+ *      输出: 5
+ *      解释: 排序后[1,2,3,4,5,6]  第一个最大元素: 6   第二个最大元素: 5
+ * @params
+ */
+export let findKthLargest = function(nums, k) {
+  let len = nums.length,tem,p;
+  for (let i = len-1; i >= 0; i--) {
+    p = i;
+    k--;
+    for (let j = i; j >= 0; j--) {
+      if (nums[j] > nums[p]) p = j;
+    }
+    if (i !== p) {
+      tem = nums[i];
+      nums[i] = nums[p];
+      nums[p] = tem;
+    }
+    if (k === 0) return nums[i];
+  }
+};
+/**
+ * @Author: Training
+ * @desc 缺失的第一个正数
+ *    给定一个未排序的整数数组，找出其中没有出现的最小的正整数。
+ *    示例 1:
+ *      输入: [1,2,0]
+ *      输出: 3
+ *    示例 2:
+ *      输入: [3,4,-1,1]
+ *      输出: 2
+ * @think
+ *      方法一: 借鉴的LeetCode上的思路,时间复杂度O(n) 空间复杂度O(1)
+ *      首先,缺失的第一个正数一定不可能是小于0的数,
+ *           然后,也不可能是大于数组长度的数
+ *           所以就排除了这两个!
+ *           然后用hash表的方式来进行映射(以下标映射值)
+ *
+ *           注: 分析数据test = [-1,0,1,2,3]
+ *
+ *      方法二:   时间复杂度O(n2) 空间复杂度O(1)
+ *          先过滤掉小于1的数据
+ *          然后从小到大排序
+ *          判断排序后的第一个元素是否为1  如果不是 直接返回1
+ *          如果是 则遍历每一个元素,判断后一个元素与当前元素的差值是否大于1
+ *          如果是 则返回当前元素的值+1
+ *          如果一直遍历完都没有返回数据,说明前面数据都是连续的,
+ *          直接返回最后一个数据值加1
+ */
+export let firstMissingPositive = function(nums) {
+  let len = nums.length,p = 0,tem = [0];  // 变量定义
+  // p这个变量保存等于1的数的个数!
+  // 第一步 :  遍历出数组中所以等于1的数,并将小于1的数赋值为1
+  // 经过此次循环 test = [1,1,1,2,3]
+  for (let i = 0;i<len;i++){
+    if (nums[i] === 1) p++;   // 判断当前下标值是是否等于1   如果是: 则p+1
+    else if(nums[i]<1) nums[i] = 1;// 若 当前值小于1  则将当前值赋值为1  但是p不变(p计算的是原值,并非更改值)
+  }
+  // 如果p的值依旧等于1  表示数组中没有等于1的数,则直接返回1 (1是最小的正整数)
+  if (p === 0)return 1;
+  // 如果数组长度等于1 而且执行到这里,说明这个唯一的值就是1 所以返回2
+  if (len === 1) return 2;
+  // 当len>1 并且数组中有1的情况下 则会向下执行至此
+  // 第二步: 循环遍历,将大于0且小于等于数组长度的值放进新数组对应的位置
+  // 如: 当前值为1,则放入下标1中  形成hash对照表
+  // 此表以数组tem形式表示: 因为不可能有数据0  所以tem的第0个数据初始化放置一个0
+  // 用test分析  tem = [0,1,2,3]
+  for (let i = 0; i < len; i++) {
+    if (nums[i] > 0 && nums[i] <= len) {
+      tem[nums[i]] = nums[i];
+    }
+  }
+  // 第三步: 判断tem中的数据是否出现在对应的位置
+  // 此时tem = [0,1,2,3]  首先进行的四次判断肯定是成立的,但是test值并非只有四个,一共有五个值,所以当进行到最后一个的时候,
+  // tem[4] === empty  而不等于4  所以会返回当前下标i  所以最终答案是4;
+  for (let i = 0; i < len; i++) {
+    if (tem[i]!==i) {
+      return i;
+    }
+  }
+  // 如果执行到了这里,说明上面的情况都不符合,比如[1,2,3,4,5,6] or [1,2,3,4,5,7]
+  // 经过第一步不会发生任何变化,经过第二步,tem的值是[0,1,2,3,4,5,6] or [0,1,2,3,4,5]
+  // 而第三步的检测只会检测到5,然后执行最后一种可能,将hash值的最后一位+1 就变成了: 7 or 6(这就是最终值)
+    return tem[tem.length-1]+1;
+};
+/**
+ * @Author: Training
+ * @desc 复原IP地址
+ *    给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
+ *    示例:
+ *
+ *      输入: "25525511135"
+ *      输出: ["255.255.11.135", "255.255.111.35"]
+ * @think 借鉴的别人的方法进行了稍微的修改(递归)
+ *  1.首先判断字符串长度,如果大于12,那肯定不是一个ip地址应有的长度
+ *  2. 判断ip地址的每一位的有效性
+ *  - ip地址不能是0开头
+ *  - IP地址可以为0
+ *  - IP地址的值不能大于255
+ *  - 每一段ip地址最多只能有3位数字
+ *  3.开始做递归
+ *  -首先是递归的边界,当当前获得的数组长度是4并且数组转字符串与原字符串相同的时候,则表示匹配到了正确的值了
+ *  -如果没到边界,进行循环,将当前的值前三位进行一个一个的匹配,如前三个是: 123 则匹配1,12,123,当满足有效性的条件时,再对接下来的数据进行递归遍历
+ */
+export let restoreIpAddresses = (s)=> {
+  if (s.length > 12) return [];
+  let r = [];
+  let valid = (str)=>{
+    if (str.length > 3) return false;
+    return str.substring(0,1) !== "0"?str<256:str.length === 1;
+  }
+  let setDot = (cur,sub)=>{
+    if (cur.length === 4 && cur.join("") == s) {
+      r.push(cur.join("."));
+    }else{
+      for (let i = 0, len = Math.min(3, sub.length), tem; i < len; i++){
+        tem = sub.substring(0,i+1);
+        if (valid(tem)) {
+
+          setDot(cur.concat(tem),sub.substring(i+1))
+        }
+      }
+    }
+  };
+  setDot([],s);
+  return r;
+};
+/**
+ * @Author: Training
+ * @desc 串联所有单词的子串
+ *    给定一个字符串 s 和一些长度相同的单词 words。
+ *    找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+ *    注意子串要与 words 中的单词完全匹配，
+ *    中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
+ *    来源：力扣（LeetCode）
+ *    链接：https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words
+ *    示例:
+ *      输入：
+ *      s = "barfoothefoobarman",
+ *      words = ["foo","bar"]
+ *      输出：[0,9]
+ *      解释：
+ *      从索引 0 和 9 开始的子串分别是 "barfoor" 和 "foobar" 。
+ *      顺序不重要, [9,0] 也是有效答案。
+ *
+ * @think
+ *    利用hash表的方式解决,时间复杂度O(n^2)
+ *    通过移动窗口将每一种可能遍历出来
+ *
+ */
+export let findSubstring = function(s, words) {
+  let len = s.length,  // 字符串长度
+    wordLen =  words.length;  // 子串的个数
+  if(!len||!wordLen||wordLen>len){console.log([]);return [];}
+  let subLen = words[0].length, // 单个子串的长度 题目说明子串长度相同
+    wLen = wordLen*subLen, // 子串总长度: 因为子串是相同长度的,所以可以这么用
+    position = [];
+
+  for (let i = len,tem,j,isT,k,hash_tem; i >=wLen; i--) { // 向下计数的方式把符合长度的全部获取到
+    isT = true;                                           // 默认此此计算为真
+    // if (wLen > i) break;
+    tem = s.slice(i - wLen,i);                            // 截取字符串
+    hash_tem = [];                                        // hash表的方式保存数据
+    for(j = 0;j<wLen;j+=subLen){                          // 获取对应子串长度的字符串,由于子串长度相同,不会出现分开排列的方式,所以将当前的字符串分成n个对应子串长度的字符串
+      hash_tem[tem.slice(j,subLen+j)] = hash_tem[tem.slice(j,subLen+j)]?hash_tem[tem.slice(j,subLen+j)]+1:1; // 将当前的字符串作为key保存到json中,值使用数字1 ,若有重复的,则当前值+1
+    }
+    for( k = 0;k<wordLen;k++){                            // 遍历每一个子串,看看是否在hash表中存在,每次对比,对应的key的值就会-1  如果为0了,但是words中还存在该子串,说明该子串在hash表中不存在了
+      if (!hash_tem[words[k]]) {                          // 每一个子串是一个独立的元素,有重复的也是独立的,当子串作为的key为undefined 或者0的时候,说明此子串在"截取字符串"中不存在或者已经被匹配完了
+        isT = false;                                      // 子串不存在,那么此次计算则为假
+        break;                                            // 直接跳出循环,优化算法
+      }
+      hash_tem[words[k]]--;                               // 如果为真,那么当前匹配子串的数量值-1,因为当前的子串已经被匹配过了,下一次如果有相同的子串,再来匹配
+    }                                                     // (可以这么想,虽然子串是一样的,但是却是两个不同的对象,就像双胞胎一样,虽然长得一样,当实实在在的就是两个人)
+    if (isT) position.push(i-wLen);                       // 如果此次计算为真的话,将此字符串的首下标值加入到数据position中
+  }
+  console.log(position,"position");
+};
+/**
+ * @Author: Training
+ * @desc 棒球比赛
+ *    你现在是棒球比赛记录员。
+ *    给定一个字符串列表，每个字符串可以是以下四种类型之一：
+ *    1.整数（一轮的得分）：直接表示您在本轮中获得的积分数。
+ *    2. "+"（一轮的得分）：表示本轮获得的得分是前两轮有效 回合得分的总和。
+ *    3. "D"（一轮的得分）：表示本轮获得的得分是前一轮有效 回合得分的两倍。
+ *    4. "C"（一个操作，这不是一个回合的分数）：表示您获得的最后一个有效 回合的分数是无效的，应该被移除。
+ *
+ *    每一轮的操作都是永久性的，可能会对前一轮和后一轮产生影响。
+ *    你需要返回你在所有回合中得分的总和。
+ *
+ *    来源：力扣（LeetCode）
+ *    链接：https://leetcode-cn.com/problems/baseball-game
+ * @think  以数据结构栈的方式进行运算
+ */
+export let calPoints = function(ops) {
+  let count = 0,tem = [],prev1,prev2;
+  for(let i = 0,len = ops.length;i<len;i++){
+    switch(ops[i]){
+      case "C":
+        tem.pop(); //出栈
+        break;
+      case "D":
+        prev1 = tem.pop();// 出栈
+        tem.push(prev1,prev1*2);// 入栈
+        break;
+      case "+":
+        prev1 = parseInt(tem.pop());// 出栈
+        prev2 = parseInt(tem.pop());// 出栈
+        tem.push(prev2,prev1,prev1+prev2);// 入栈
+        break;
+      default:
+        tem.push(parseInt(ops[i]));// 入栈
+    }
+  }
+  return tem.reduce((t,n)=>t+n);//计算最终结果
+};
