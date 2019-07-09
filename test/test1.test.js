@@ -21,7 +21,14 @@ import {
   sortArray,
   maximumGap,
   sortArrayByParityII,
-  findKthLargest, firstMissingPositive, restoreIpAddresses, findSubstring, maximalRectangle
+  findKthLargest,
+  firstMissingPositive,
+  restoreIpAddresses,
+  findSubstring,
+  maximalRectangle,
+  MyCircularQueue,
+  MyLinkedList,
+  reverseList
 } from "../src";
 
 // test('for循环数据',()=>{
@@ -122,7 +129,7 @@ test('复原ip地址:',()=> {
   // 2,3,1,4,8,8,56
 })*/
 
-test('最大矩形:',()=> {
+/*test('最大矩形:',()=> {
   expect(maximalRectangle([
     ["1","0","1","0","0"],
     ["1","0","1","1","1"],
@@ -130,4 +137,20 @@ test('最大矩形:',()=> {
     ["1","1","1","1","1"],
     ["1","0","0","1","0"]
   ])).toBe(10);
+})*/
+/*let CircularQueue = new MyCircularQueue(3);
+test("循环队列",()=>{
+  expect(CircularQueue.enQueue(2))
+})*/
+
+// 反向链表的前提是需要一个链表  这里用之前实现的链表进行测试
+let linkedList = new MyLinkedList();
+linkedList.addAtHead(1);
+linkedList.addAtTail(2);
+linkedList.addAtTail(3);
+linkedList.addAtTail(4);
+linkedList.addAtTail(5);
+console.log(linkedList);
+test("反向链表",()=>{
+  expect(reverseList(linkedList))
 })

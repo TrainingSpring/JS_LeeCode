@@ -1324,6 +1324,7 @@ export let findSubstring = function(s, words) {
   }
   console.log(position,"position");
 };
+/******************************************************数据结构 队列 和 栈 *******************************************************************/
 /**
  * @Author: Training
  * @desc 棒球比赛
@@ -1424,3 +1425,364 @@ export let maximalRectangle = function(matrix) {
   });
   return maxarea;
 };
+/**
+ * @Author: Training
+ * @desc 设计循环队列
+ *    设计你的循环队列实现。
+ *    循环队列是一种线性数据结构，其操作表现基于 FIFO（先进先出）原则并且队尾被连接在队首之后以形成一个循环。
+ *    它也被称为“环形缓冲器”。
+ *    循环队列的一个好处是我们可以利用这个队列之前用过的空间。
+ *    在一个普通队列里，一旦一个队列满了，我们就不能插入下一个元素，即使在队列前面仍有空间。
+ *    但是使用循环队列，我们能使用这些空间去存储新的值。
+ *    你的实现应该支持如下操作：
+ *
+ *    MyCircularQueue(k): 构造器，设置队列长度为 k 。
+ *    Front: 从队首获取元素。如果队列为空，返回 -1 。
+ *    Rear: 获取队尾元素。如果队列为空，返回 -1 。
+ *    enQueue(value): 向循环队列插入一个元素。如果成功插入则返回真
+ *     deQueue(): 从循环队列中删除一个元素。如果成功删除则返回真。
+ *     isEmpty(): 检查循环队列是否为空。
+ *     isFull(): 检查循环队列是否已满。
+ * @params
+ */
+/** 构造器 设置队列长度为k */
+let MyCircularQueue = function (k) {
+  this.len = k;
+  this.empty = true;
+  this.useLen = 0;
+  this.queue = new Array(k);
+  this.head = -1;
+  this.end = -1;
+};
+/**
+ * @desc Front: 从队首获取元素。如果队列为空，返回 -1 。
+ * @return {number}
+ */
+MyCircularQueue.prototype.Front = function () {
+  if (this.empty) return -1;
+  else return this.queue[this.head];
+};
+/**
+ * @desc  Rear: 获取队尾元素。如果队列为空，返回 -1 。
+ * @return {number}
+ */
+MyCircularQueue.prototype.Rear = function () {
+  if (this.empty) return -1;
+  else return this.queue[this.end];
+};
+/**
+ * @desc 向循环队列插入一个元素。如果成功插入则返回真
+ * @param value
+ * @returns {boolean}
+ */
+MyCircularQueue.prototype.enQueue = function (value) {
+  if (value === undefined) return false;
+  if (this.len > this.useLen) {
+    this.useLen++;
+    this.end ++;
+    if (this.head === -1){
+      this.head ++;
+    }else if (this.head > 0 && this.end === this.len) {
+      this.end = 0;
+    }
+    this.queue[this.end] = value;
+    if (this.empty)this.empty = false;
+    return true;
+  }else{
+    return false;
+  }
+};
+/**
+ * @desc 从循环队列中删除一个元素。如果成功删除则返回真。
+ * @returns {boolean}
+ */
+MyCircularQueue.prototype.deQueue = function () {
+  if (this.useLen > 0) {
+    this.queue[this.head] = "";
+    this.head ++;
+    this.useLen --;
+    if (this.head === this.len && this.useLen) {
+      this.head = 0;
+    }
+    if (this.useLen === 0) this.empty = true;
+    return true;
+  }else {
+    return false;
+  }
+};
+/**
+ * @desc  队列是否为空
+ * @returns {boolean}
+ */
+MyCircularQueue.prototype.isEmpty = function(){
+  return this.empty
+};
+/**
+ * @desc 队列是否已满
+ * @returns {boolean}
+ */
+MyCircularQueue.prototype.isFull = function(){
+  if (this.useLen === this.len) return true;
+  return false;
+}
+/**
+ * @Author: Training
+ * @desc 任务调度器
+ *
+ *    给定一个用字符数组表示的 CPU 需要执行的任务列表。
+ *    其中包含使用大写的 A - Z 字母表示的26 种不同种类的任务。
+ *    任务可以以任意顺序执行，并且每个任务都可以在 1 个单位时间内执行完。
+ *    CPU 在任何一个单位时间内都可以执行一个任务，或者在待命状态。
+ *
+ *    然而，两个相同种类的任务之间必须有长度为 n 的冷却时间，
+ *    因此至少有连续 n 个单位时间内 CPU 在执行不同的任务，或者在待命状态。
+ *
+ *    你需要计算完成所有任务所需要的最短时间。
+ *
+ *    来源：力扣（LeetCode）
+ *    链接：https://leetcode-cn.com/problems/task-scheduler
+ *
+ *    示例1:
+ *    输入: tasks = ["A","A","A","B","B","B"], n = 2
+ *    输出: 8
+ *    执行顺序: A -> B -> (待命) -> A -> B -> (待命) -> A -> B.
+ *
+ *    示例 2
+ *    输入: tasks = ["A","A","A","B","B","C","D"],n = 3
+ *    输出: 9
+ *    执行顺序: A->B->C->D->A->B->(待命)->(待命)->A
+ *
+ *    示例 3
+ *    输入: tasks = ["A","A","A","B","B","B","C","C","D","D"],n = 3
+ *    输出: 10
+ *    执行顺序: A->B->C->D->A->B->C->D->A->B
+ *
+ *    示例 4
+ *    输入: tasks = ["A","A","A","A","B","B","C","D","D","D"],n = 3
+ *    输出: 13
+ *    执行顺序: A->B->C->D->A->B->(等待)->D->A->(等待)->(等待)->D->A
+
+ * @think
+ *    使用规律:  最终执行时间和同种类任务最多的有关,比如示例3
+ *      有四个A任务,那么它的执行时间  至少是(4-1)*(n+1)
+ *      因为最后一个后面A任务后面可能没有任何任务,那么等待也就是没意义的 所以是4-1!
+ *      每一个的间隔是3  那么是: ABCD  那么加上自身,每一段就是四个任务 所以是n+1
+ *      直到最后,将最多的那个任务减去的1加上(如果最多的任务有多个,那么得加上最多任务的数量)
+ *      如 例1: 经过前两轮的任务执行,A和B的数量都是最多的,那么最终留下的依旧会有A和B 所以得+2
+ *      也就是加同类最多任务数的个数!
+ *      最终公式: (max - 1)*(n+1)+(max_count);
+ *                (最大同类任务数量- 1) * (间隔时间+1) + 最多任务的数量
+ */
+export let leastInterval = function(tasks, n) {
+  let len = tasks.length;
+  if (n === 0) return len;
+  let max_count = 0,max = 0,tem = {};
+  tasks.forEach(item=>{
+    if (tem[item]) tem[item]++;
+    else tem[item] = 1;
+  })
+  for (let key in tem) {
+    if (max < tem[key]) {
+      max = tem[key];
+      max_count =  1;
+    }else if ( max === tem[key] ){
+      max_count ++;
+    }
+  }
+
+  return Math.max((max-1)*(n+1)+max_count,len)
+};
+/**
+ * @Author: Training
+ * @desc 实现一个链表(单向链表)
+ * @think 根据链表的特性实现一个链表
+ */
+/**
+ * @desc 链表的元素的结构对象
+ * @think 链表中有当前元素  和下一个指向元素
+ *    在C中有指针可以指向下一个元素地址
+ *    在js中 next元素就是下一个元素的引用地址
+ */
+let Node = function (val) {
+  this.value = val;
+  this.next = null;
+}
+/**
+ * Initialize your data structure here.
+ */
+export let MyLinkedList = function() {
+  this.head = null;
+  this.length = 0;
+};
+/**
+ * @Author: Training
+ * @desc Get the Node of the index-th in the linked list, if the index is invalid ,return -1;
+ * @return {Node|number}
+ */
+MyLinkedList.prototype.find = function(index){
+  if (index <= 0) return this.head;
+  else if (index < 0 || index >= this.length) return -1;
+  let current = this.head;
+  while (index > 0) {
+    current = current.next;
+    index --;
+  }
+  return current;
+}
+/**
+ * Get the value of the index-th node in the linked list. If the index is invalid, return -1.
+ * @param {number} index
+ * @return {number}
+ */
+MyLinkedList.prototype.get = function(index) {
+  let current = this.find(index);
+  return (current!==-1 && current !== null)?current.value:-1;
+};
+
+/**
+ * Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list.
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtHead = function(val) {
+  let head = this.head;
+  let current = new Node(val);
+  current.next = head;
+  this.head = current;
+  this.length ++;
+};
+
+/**
+ * Append a node of value val to the last element of the linked list.
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtTail = function(val) {
+  if( this.length === 0) this.addAtHead(val);
+  else{
+    let last = this.find(this.length-1);
+    last.next = new Node(val);
+    this.length ++;
+  }
+
+};
+
+/**
+ * Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted.
+ * @param {number} index
+ * @param {number} val
+ * @return {void}
+ */
+MyLinkedList.prototype.addAtIndex = function(index, val) {
+  if (index === 0) this.addAtHead(val);
+  else if (index === this.length) this.addAtTail(val);
+  else if (index > this.length) return;
+  else{
+    let next = this.find(index);
+    let prev = this.find(index - 1);
+    let target = new Node(val);
+    prev.next = target;
+    target.next = next;
+    this.length ++;
+  }
+};
+
+/**
+ * Delete the index-th node in the linked list, if the index is valid.
+ * @param {number} index
+ * @return {void}
+ */
+MyLinkedList.prototype.deleteAtIndex = function(index) {
+  if (index >= this.length || index < 0) return ;
+  if (index === 0) {
+    this.head = this.head.next;
+  }else{
+    let prev = this.find(index-1);
+    prev.next = this.find(index).next;
+  }
+  this.length --;
+};
+/**
+ * @Author: Training
+ * @desc foreach the  Linked List item
+ */
+MyLinkedList.prototype.forEachList = function(callback){
+  let link = this.head;
+  for (let i = 0; i < this.length; i++) {
+    callback(link,i);
+    link = link.next;
+  }
+}
+/**
+ * @Author: Training
+ * @desc 环形链表  环形链表II  相交链表
+ * 题解代码在LeetCode上
+ * @think
+ * 1. 环形链表  判断链表中是否存在环形链表
+ *      类似跑道奔跑比赛 ,两个人,一个跑得快,一个跑的慢
+ *        如果是直线跑道,最终都会到达终点
+ *        如果是环形跑道呢: 跑的快的人最终会在第二圈追到跑得慢的人!
+ *        两人相遇,那么代表是环形跑道
+ *      环形链表也是如此:
+ *        设定一个快指针,一个慢指针,快指针每次跑1,慢指针每次跑2,
+ *        当快指针追到了慢指针,也就是 快指针===慢指针的时候,说明是环形链表
+ *        返回true;
+ *        若是快指针达到了边界 也就是null的时候,说明就是普通链表
+ *        返回false
+ * 2. 环形链表II  找到环形链表的起始位置,
+ *        环形链表可能是完全环形链表,末尾指针指向了头指针
+ *        或者半环形链表,末尾指针指向了中间的某个地址
+ *      拿生活中的例子举例, 比如马路上的圆盘,不考虑出去的情况
+ *        当司机直线行驶到了圆盘,进入圆盘后,由于不考虑出去的情况,则会一直在圆盘循环
+ *        计算的值就是进入圆盘的位置
+ *      首先  判断链表是否是环形链表,若不是直接返回null,下面的步骤就省了
+ *      若是环形链表,再加一个指针,记录相遇时候的值,然后,头指针和相遇指针一步一步的走,
+ *      若是两指针相遇了,那么返回该对象,这里就是进入口!
+ *      因为: k(快指针),m(慢指针)  k的速度是m的两倍,在一个相同长度的圆环内,若m刚好跑了一圈,
+ *            那么k一定在此时刚好跑了两圈,并且相遇,
+ *            若环形前有一段直线入口当m进入环形入口,k已经比m多跑了一倍的路程,就是2m,此时的m刚刚好与
+ *            直线路程一样,所以k比m多跑了那一段直线的路程!当两者再次相遇,k奔跑的总路程是m的总路程的一倍,
+ *            但是k在环形里奔跑的距离,出了速度上的一倍差距外,始终比m多一段直线的距离
+ *            此时m距离出口的位置就是 那段直线的距离! --可以找示例证明
+ *   3.   相交链表  判断两个链表相交的位置
+ *      设: a链表和b链表
+ *      算了: 不知道怎么表达了,看LeetCode解题吧!
+ */
+/**
+ * @Author: Training
+ * @desc 反转链表
+ * @think  遍历链表
+ *  获取上一个位置的值
+ *  将当前位置的值的next指向上一个
+ */
+export let reverseList = function(head) {
+  let prev = null,curr = head;
+  // 以链表 1->2->3->4->5为例
+  while(curr){               // 第一次循环                                 第二次循环:                  第三次:           ......
+    let next = curr.next; // 保存当前链表的下一个  next = 2->3->4->5              next = 3->4->5        next = 4->5
+    curr.next = prev;      // 当前值的下一个改为上一个的值 curr === (1->null)      curr = 2->1->null     curr = 3->2->1->null
+    prev = curr;            // 上一个的值被赋值为当前链表 prev = (1->null)         prev = 2->1->null     prev = 3->2->1->null
+    curr = next;            // 当前值更改为原链表自身下一个  curr = 2->3->4->5     curr = 3->4->5        curr = 4->5
+  }
+  console.log(prev);
+  return prev;//最终prev的值就是原链表的反值
+};
+/**
+ * @Author: Training
+ * @desc 奇偶链表
+ *    给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。
+ *    请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
+ *
+ *    请尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
+ *
+ *    示例 1:
+ *      输入: 1->2->3->4->5->NULL
+ *      输出: 1->3->5->2->4->NULL
+ *    示例 2:
+ *      输入: 2->1->3->5->6->4->7->NULL
+ *      输出: 2->3->6->7->1->5->4->NULL
+ * @params
+ */
+export let oddEvenList = function(head) {
+  
+}
