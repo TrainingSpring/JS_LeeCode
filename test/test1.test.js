@@ -27,8 +27,9 @@ import {
   findSubstring,
   maximalRectangle,
   MyCircularQueue,
+  searchLastLessEqualK,
   MyLinkedList,
-  reverseList
+  reverseList, bubsort, insSort, selsort, merageSort, sqSort
 } from "../src";
 
 // test('for循环数据',()=>{
@@ -144,13 +145,41 @@ test("循环队列",()=>{
 })*/
 
 // 反向链表的前提是需要一个链表  这里用之前实现的链表进行测试
-let linkedList = new MyLinkedList();
-linkedList.addAtHead(1);
-linkedList.addAtTail(2);
-linkedList.addAtTail(3);
-linkedList.addAtTail(4);
-linkedList.addAtTail(5);
-console.log(linkedList);
-test("反向链表",()=>{
-  expect(reverseList(linkedList))
-})
+// let linkedList = new MyLinkedList();
+// linkedList.addAtHead(1);
+// linkedList.addAtTail(2);
+// linkedList.addAtTail(3);
+// linkedList.addAtTail(4);
+// linkedList.addAtTail(5);
+// console.log(linkedList);
+// test("反向链表",()=>{
+//   expect(reverseList(linkedList))
+// })
+// let  randomArray = (num)=>{
+//   let arr = [];
+//   for (let i = 0; i < num; i++) {
+//     arr.push(Math.ceil(Math.random()*1000));
+//   }
+//   return arr;
+// }
+// let newA = randomArray(2000000);
+// // newA = selsort(newA).reverse();
+// let A1 = Object.assign([],newA);
+// let A2 = Object.assign([],newA);
+// let A3 = Object.assign([],newA);
+// let A4 = Object.assign([],newA);
+// test("选择排序",()=>{
+//   expect(selsort(A1))
+// });
+/*test("插入排序",()=>{
+  expect(insSort(A2))
+});*/
+// test("快速排序",()=>{
+//   expect(sqSort(A3))
+// });
+// test("归并排序",()=>{
+//   expect(merageSort(A4))
+// });
+// test("查找有序数组中小于等于k的值的下标",()=>{
+//   expect(searchLastLessEqualK([0,1,2,3,4,5,6,7,8,9,10],5.6)).toBe(5)
+// });

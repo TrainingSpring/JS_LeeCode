@@ -1783,6 +1783,434 @@ export let reverseList = function(head) {
  *      输出: 2->3->6->7->1->5->4->NULL
  * @params
  */
-export let oddEvenList = function(head) {
-  
+export let oddEvenList = function(Node) {
+  let head = Node.head;
+  if (!head || !head.next) return Node.head;
+  // 官方解题...
+  let odd = head,even = head.next,evenHead = even; // 定义三个指针,一个偶数指针,一个奇数指针,一个指向偶数头
+  while (even && even.next) {   // 判断偶数个是否为真 和下一个偶数个是否为真
+    odd.next = even.next;
+    odd = odd.next;
+    even.next = odd.next;
+    even = even.next;
+  }
+  odd.next = evenHead;
+  Node.head = head;
+
+  //我的解题
+
+  // let odd = {value:head.value,next:null},
+  //   even = {value:head.next.value,next:null},
+  //   p = 1,
+  //   op = odd,
+  //   ep = even;
+  //   while(head){
+  //     if(p>2){
+  //       if (p % 2 !== 0) {
+  //         op.next = {
+  //           value:head.value,
+  //           next:null
+  //         };
+  //         op = op.next;
+  //       }else{
+  //         ep.next = {
+  //           value:head.value,
+  //           next:null
+  //         };
+  //         ep = ep.next;
+  //       }
+  //     }
+  //     head = head.next;
+  //     p++;
+  //   }
+  //   op.next = even;
+  // Node.head = odd;
 }
+/**
+ * @Author: Training
+ * @desc 冒泡排序
+ * @think  从左到右进行排序,两两比较,将最大的移动到最右侧 
+ */
+export let bubsort=(arr)=>{
+  let len = arr.length,temp,flag = false;
+  for (let i = len;i>0;i--){
+    flag = false;
+    for (let j = 0;j<i;j++ ){
+      if (arr[j] < arr[j - 1]) {
+        temp = arr[j];
+        arr[j] = arr[j-1];
+        arr[j-1] = temp;
+        flag = true;
+      }
+    }
+    if (!flag) break;
+  }
+  return arr;
+};
+/**
+ * @Author: Training
+ * @desc 插入排序
+ * @think  未排序的元素与已排序的元素一一对比,然后插入  https://visualgo.net/zh/sorting  看原理
+ */
+export let insSort = (arr)=>{
+  let len = arr.length,temp;
+  for (let i = 1; i < len; i++) {
+    if (arr[i] < arr[i - 1])
+      for (let j = i-1; j >= 0; j--) {
+        if (arr[i]>=arr[j]){
+          temp = arr[i];
+          arr.splice(i,1);
+          arr.splice(j+1,0,temp);
+          break;
+        }else if (j === 0){
+          temp = arr[i];
+          arr.splice(i,1);
+          arr.unshift(temp);
+        }
+      }
+  }
+  return arr;
+};
+/**
+ * @Author: Training
+ * @desc 选择排序
+ */
+export let selsort = (nums)=>{
+  let len = nums.length,p = 0;
+  for (let i = 0; i < len-1; i++) {
+    p = i;
+    for (let j = i + 1; j < len; j++)
+      if (nums[j] < nums[p]) p = j;
+    if (p !== i) {
+      let tem = nums[i];
+      nums[i] = nums[p];
+      nums[p] = tem;
+    }
+  }
+  return nums;
+}
+/*******************************************************************************************
+ * @Author: Training                                                                       *
+ * @desc 归并排序                   演示地址: https://visualgo.net/zh                      *
+ * @think 从中间分离,分别排序左侧与右侧数据 然后将左侧与右侧数据合并                       *
+ *******************************************************************************************/
+/**
+ * @Author: Training
+ * @desc 归并排序递归处理函数
+ */
+let sort = (arr,p,n)=>{
+  let q = Math.floor((n+p)/2); // 找到中间位置
+  if (p >= n) return;             // 当只有一个数的时候返回
+  sort(arr,p,q);                   // 排序前半段
+  sort(arr,q+1,n);             // 排序后半段
+  merage(arr,p,q+1,n);       // 对已经排好的两段数据进行排序[操作原数组] ( 最终会到只有两个数据的时候进行排序 )
+  // 递归很难理解   多刷题哟
+}
+/**
+ * @Author: Training
+ * @desc 对两端有序的数据进行分析
+ * @think  就是一半一半的对比
+ *
+ *   排序方式:
+ *   例1: arr = [1,0];
+ *    获取左右两端的值进行对比:
+ *      0     1
+ *      ↓    ↓
+ *      1     0
+ *    arr[3,1,2,0]
+ *    3,1    2,0
+ *     ↓     ↓
+ *    1,3    0,2
+ *     ↓     ↓
+ *      0,1,2,3
+ *  例3:
+ *      3,1,2
+ *       3,1     2
+ *        ↓    ↓
+ *       1,3    2
+ *        ↓    ↓
+ *         1,2,3
+ */
+let merage = (arr,left,mid,right)=>{
+  let leftArray = arr.slice(left,mid), // 找到前半段
+    rightArray = arr.slice(mid,right+1),// 找到后半段
+    i = 0,j = 0,l = left;
+  while (i < leftArray.length && j < rightArray.length) {
+    if (leftArray[i] <= rightArray[j]){
+      arr[l] = leftArray[i];
+      i++;
+    }else{
+      arr[l] = rightArray[j];
+      j++;
+    }
+    l++;
+  }
+  while (l <= left + right) {
+    if (i < leftArray.length) {
+      arr[l] = leftArray[i];
+      i++;
+    }else if (j < right.length) {
+      arr[l] = rightArray[j];
+      j++;
+    }
+    l++;
+  }
+};
+/**
+ * @Author: Training
+ * @desc 归并排序入口函数
+ */
+export let merageSort = (nums)=>{
+  let len = nums.length;
+  sort(nums,0,len-1);
+};
+/******************************************************
+ *                   归并排序结束                     *
+ ******************************************************/
+/**************************************************************************************************************
+ * @Author: Training                                                                                          *
+ * @desc                   快速排序        演示地址: https://visualgo.net/zh                                  *
+ * @think 找到一个节点,然后做对比,小的排节点左侧,大的排右侧,依次排列,类似于归并,但却有差距                    *
+ * 快速排序最大的鸡肋是:  对一组无序数据,排序非常快 时间复杂度: O(nlogn) 但是对有序数据... 那简直太慢了,      *
+ * 和冒泡排序有的一拼,时间复杂度:O(n^2)                                                                       *
+ **************************************************************************************************************/
+export let sqSort = (nums)=>{
+  sort_sq(nums,0,nums.length-1);
+  return nums;
+};
+let sort_sq = (arr,start,end)=>{
+  if (start >= end) return;
+  let pivot = partition(arr,start,end);
+  sort_sq(arr,start,pivot-1);
+  sort_sq(arr,pivot+1,end);
+};
+/**
+ * @Author: Training
+ * @desc 通过调换位置,找到中间节点的位置 
+ * @think
+ *    
+ */
+let partition = (arr,start,end)=>{
+  let pivot = arr[start];
+  let i = end,temp;
+  for (let j = end; j >=start; j--) {
+    if (arr[j] > pivot) {
+      temp = arr[j];
+      arr[j] = arr[i];
+      arr[i] = temp;
+        i--;
+    }
+  }
+  temp = arr[start];
+  arr[start] = arr[i];
+  arr[i] = temp;
+  return i;
+};
+/**
+ * @Author: Training
+ * @desc 计数排序
+ * @think  类似于hash  用hash的方式储存现有数据的个数,然后从小到大进行依次放置  时间复杂度: O(n)
+ */
+let cousort = (nums)=>{
+  let len = nums.length,temp = [],min = 0;
+  for (let i = 0; i < len; i++)
+    if (nums[i] < min) min = nums[i];
+  for (let i = 0; i < len; i++) {
+    nums[i] = nums[i]+(-min);
+    if (temp[nums[i]]) temp[nums[i]]++;
+    else temp[nums[i]] = 1;
+  }
+  let j = 0;
+  for (let i in temp){
+    while (temp[i]) {
+      nums[j] = parseInt(i)+min;
+      temp[i]--;
+      j++;
+    }
+  }
+  return nums;
+};
+/**
+ * @Author: Training
+ * @desc 有序数组中,查找第一个值等于给定值的元素
+ * @think   二分查找法
+ */
+export let searchFirstK = (nums,k)=>{
+  let len = nums.length,min = 0,max = len-1,mid;
+  while(max >= min){
+    mid = min+((max-min)>>1);
+    if (nums[mid] > k) {
+      max = mid-1;
+    }else if(nums[mid]<k){
+      min = mid +1;
+    }else{
+      if (mid === 0 ||  nums[mid - 1] !== k) return mid;
+      else max = mid -1;
+    }
+  }
+};
+/**
+ * @Author: Training
+ * @desc 有序数组中,查找最后一个值等于给定值的元素
+ * @think 同样利用二分查找法,根据上面代码变形即可
+ */
+export let searchLastK = (nums,k)=>{
+  let len = nums.length,min = 0,max = len-1,mid;
+  while(max >= min){
+    mid = min+((max-min)>>1);
+    if (nums[mid] > k) max = mid-1;
+    else if(nums[mid]<k) min = mid +1;
+    else{
+      if (mid === len-1 ||  nums[mid + 1] !== k) return mid;
+      else min = mid +1;
+    }
+  }
+};
+/**
+ * @Author: Training
+ * @desc 有序数组中,查找第一个大于等于给定值的元素
+ * @think 二分
+ */
+export let searchFirstGreaterEqualK = (nums,k)=>{
+  let len = nums.length,min = 0,max = len-1,mid;
+  while (max >= min) {
+    mid = min + ((max-min)>>1);
+    if (nums[mid] < k) {
+      min = mid+1;
+    }else{
+      if (nums[mid - 1] < k || mid === 0) return mid;
+      else max = mid-1;
+    }
+  }
+};
+/**
+ * @Author: Training
+ * @desc 有序数组中,查找最后一个小于等于给定值的元素
+ * @think 二分
+ */
+export let searchLastLessEqualK = (nums,k)=>{
+  let len = nums.length,max = len-1,min = 0,mid;
+  while (max >= min) {
+    mid = min+((max-min)>>1);
+    if (nums[mid] > k) {
+      max = mid-1;
+    }else{
+      if (mid === len - 1 || nums[mid + 1] > k) return mid;
+      else min = mid +1;
+    }
+  }
+};
+/********************************************************************************************
+ * @Author: Training                                                                        *
+ * @desc hash表(散列表)                                                                     *
+ * @think                                                                                   *
+ *    hash表  通过key值快速查找到对应的内容,使用链表解决hash碰撞(在同一个空间内相同的key值) *
+ *    hash表是使用的数组的方式实现,数组的随机访问快,在同一个位置或许会有多个不同的数据      *
+ *      所以,使用链表的方式连接,链表中以后key,val,next,prev  双向链表  具体看注释           *
+ *******************************************************************************************/
+/**
+ * @Author: Training
+ * @desc 双向链表的结构体
+ * @params key: key值 ,val:value数据
+ */
+function LinkNode(key,val) {
+  this.key = key;
+  this.val = val;
+  this.next = null;
+  this.prev = null;
+}
+/**
+ * @Author: Training
+ * @desc hash表对象函数
+ * @params none
+ */
+function HashMap () {
+  this.table = new Array(100); // 以数组作为容器,储存数据
+  this.linked = function (key, val) {       // 工厂模式:  实例化双向链表
+    return new LinkNode(key,val);
+  };
+}
+/**
+ * @Author: Training
+ * @desc 根据特定的算法来找到key所对应的table的储存空间位置(下标)
+ * @params key
+ */
+HashMap.prototype.getPosition = function(key){
+  // 类型判定  不允许出了number和string类型以外的数据类型
+  if (typeof key !== "string" && typeof key !== "number") throw new Error("key 类型错误");
+  // 变量定义
+  let t = 0,len = key.length,size = this.table.length;
+  // 当类型为string的时候 执行以下函数
+  if (typeof key === "string")
+    for (let i = 0; i < len; i++) {
+      t += key.charCodeAt(i); // 将key的每一位转换成 Unicode 然后再加上t再赋值给t
+    }
+  else t = key; // 如果是number类型,直接赋值给t就好了  不用做多余工作
+  // 具体要放在数组的哪儿呢 ,因为数组的长度是固定的,这里默认是100
+  // 所以t值需要和100取模,来确定这个数据一定在100以内,然后就找到了对应位置 将位置返回
+  return t % size;
+};
+/**
+ * @Author: Training
+ * @desc 查找对应链表中的key值,因为数据结构的缘故,key值是唯一的
+ * @params node : 链表对象  key:要查找的key值
+ */
+HashMap.prototype.findLinked = function(Node,key){
+  // 边界判断,key和链表对象都不能为假
+  if (!key || !Node) return -1;
+  // curr代理链表
+  let curr = Node;
+  // 查找链表中对应值,然后返回,不多做解释
+  while(curr){
+    if (curr.key === key) return curr;
+    curr = curr.next;
+  }
+  return -1;
+};
+/**
+ * @Author: Training
+ * @desc 添加新的数据
+ * @params key: key  val:value
+ */
+HashMap.prototype.put = function(key,val){
+  // 首先确定位置,然后找到位置上现存的数据,现存数据中是否已经有了key
+  let p = this.getPosition(key),item ,link = this.table[p],curr = this.findLinked(link,key);
+  // 如果已经存在当前key,只需要更新当前key的val就好了
+  if (curr !== -1) {
+    curr.val = val;
+  }else{
+    // 如果不存在,在链表头插入当前key的数据
+    item = this.linked(key,val); // 创建一个链表
+    item.next = link;           // 这个链表的下一个元素指向的原来的元素
+    if (link) link.prev = item; // 如果对应的数组中的位置中不为空的时候才将prev的值更改
+    this.table[p] = item;
+  }
+};
+HashMap.prototype.get = function(key){
+  let p = this.getPosition(key);
+  return this.findLinked(this.table[p],key).val;
+};
+HashMap.prototype.forEach = function(callback){
+  let size = this.table.length-1;
+  for (let i = 0; i < size; i++) {
+    let link = this.table[i];
+    while (link){
+      callback(link.key,link.val);
+      link = link.next;
+    }
+
+  }
+};
+HashMap.prototype.remove = function(key){
+  let p = this.getPosition(key),item = this.findLinked(this.table[p],key);
+  if (item !== -1) {
+    let prev = item.prev;
+    if (prev) {
+      prev.next = item.next;
+      if (item.next) item.next.prev = prev;
+    }else{
+      this.table[p] = item.next;
+      this.table[p].prev = null;
+    }
+  }
+};
