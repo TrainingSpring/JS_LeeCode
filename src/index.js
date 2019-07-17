@@ -2124,12 +2124,12 @@ function LinkNode(key,val) {
  * @desc hash表对象函数
  * @params none
  */
-function HashMap () {
+export let HashMap = ()=>{
   this.table = new Array(100); // 以数组作为容器,储存数据
   this.linked = function (key, val) {       // 工厂模式:  实例化双向链表
     return new LinkNode(key,val);
   };
-}
+};
 /**
  * @Author: Training
  * @desc 根据特定的算法来找到key所对应的table的储存空间位置(下标)
@@ -2186,31 +2186,272 @@ HashMap.prototype.put = function(key,val){
     this.table[p] = item;
   }
 };
+/**
+ * @Author: Training
+ * @desc 获取hash表中对应的数据值
+ * @params key  数据的key值
+ */
 HashMap.prototype.get = function(key){
-  let p = this.getPosition(key);
-  return this.findLinked(this.table[p],key).val;
+  let p = this.getPosition(key); // 获取到key对应的位置信息
+  return this.findLinked(this.table[p],key).val;// 返回查找到的数据的val
 };
+/**
+ * @Author Training
+ * @desc 遍历所有数据
+ * @param callback  回调函数  包含(key,val)参数
+ */
 HashMap.prototype.forEach = function(callback){
   let size = this.table.length-1;
   for (let i = 0; i < size; i++) {
     let link = this.table[i];
+    // 当hash数组中当前下标的值不为空的时候 才遍历
     while (link){
       callback(link.key,link.val);
       link = link.next;
     }
-
   }
 };
+/**
+ * @Author: Training
+ * @desc 移除指定数据
+ * @params key
+ */
 HashMap.prototype.remove = function(key){
+  // 找到对应key对应的位置,并且找到该位置中指定的数据
   let p = this.getPosition(key),item = this.findLinked(this.table[p],key);
+  // 如果查找到了对应的值(item!==-1)
   if (item !== -1) {
+    // 上一个数据
     let prev = item.prev;
+    // 如果上一个数据为真(也就是不为null)
+    // 这里是做边界处理  如果上一个不为null  也就不是当前链表中第一个数据
     if (prev) {
       prev.next = item.next;
       if (item.next) item.next.prev = prev;
     }else{
+      // 如果上一个为null了 那么链表的头变为head的下一个数据
+      let next = item.next;
       this.table[p] = item.next;
-      this.table[p].prev = null;
+      // 边界处理 如果next同时不为null的时候 执行以下数据(也就是说这整个链表的数据数量大于1的时候 才执行)
+      // 如果链表的数据量等于1  那就不需要执行了  删掉第一个  那么此链表就是空  也就是null
+      if(next) this.table[p].prev = null;
     }
+  }
+};
+/***************************************************************************************************************************
+ * @Author: Training                                                                                                       *
+ * @desc 二叉查找树                                                                                                        *
+ * @params                                                                                                                 *
+ ***************************************************************************************************************************/
+/**
+ * @Author: Training
+ * @desc 二叉树的节点对象
+ * @params val
+ */
+function TreeNode (val){
+  this.val = val;
+  this.left = this.right = this.parent = null;
+}
+function SearchTree(){
+  this.root = null;
+  this.createTree = function (val) {
+    return new TreeNode(val);
+  }
+}
+
+/**
+ * @author Training
+ * @desc 查找指定值的位置
+ * @param val    需要查找的值
+ * @param callback  回调函数: 参数: state  状态(-1为应该插入到right,0位left)   root: 当前节点
+ * @returns {boolean}  true为查找到了  false未找到
+ */
+SearchTree.prototype.query = function(val,callback){
+  if (val === null || this.root === null) throw new Error("错误: 请检查输入的值是否正确切不为null,否则请检查二叉树中是否存在数据!!!");
+  let search = function (root, val) {
+    if (root.right === null && root.val<val ) {  // 右侧节点为空,并且当前节点的值要小于所查节点
+      callback(-1,root);  // 此时回调当前节点的状态 以及当前节点   -1代表节点的右侧为空并且搜索值大于当前节点(在插入操作中,代表应该直接插入到右侧)
+      return false; // 返回查找状态
+    }else if(root.left === null && root.val>val){ // 与上面相反
+      callback(0,root);
+      return false;
+    }
+    if (root.val > val) search(root.left,val);// 递归函数,如果以上条件不满足,递归找寻左侧节点
+    else if(root.val<val) search(root.right,val);// 递归函数,如果以上条件不满足,递归找寻右侧节点
+    else {
+      callback(true,root); // 当val 和当前节点的值相当的时候 调取回调函数
+      return true;
+    }
+  };
+  return search(this.root,val);
+};
+/**
+ * @author Training
+ * @desc 插入数据到二叉树
+ * @param val 需要插入进去的值
+ */
+SearchTree.prototype.insert = function(val){
+  if (!this.root) {
+    this.root = this.createTree(val);
+  }else{
+    this.query(val,(state,root)=>{
+      // console.log(root,val,state);
+      if (state === 0) {
+        root.left = this.createTree(val);
+        root.left.parent = root;
+      }else if (state === -1){
+        root.right = this.createTree(val);
+        root.right.parent = root;
+      }else{
+        let right = root.right;
+        root.right = this.createTree(val);
+        if (right !== null) root.right.right = right;
+        console.log(root,val)
+      }
+    });
+  }
+};
+/**
+ * @Author: Training
+ * @desc 中序遍历二叉查找树 (遍历后就是已排序数据)
+ * @return {array} 返回遍历后的数组数据
+ */
+SearchTree.prototype.forEach = function(){
+  let each = function (root) {
+    if (root === null) return [] ;
+    return [...each(root.left),root.val,...each(root.right)];
+  };
+  return (each(this.root));
+};
+/**
+ * @Author: Training
+ * @desc 查找数据
+ * @params val
+ */
+SearchTree.prototype.get = function(val){
+  let  p;
+  this.query(val,(state,root)=>{
+    if (state === true) p =  root;
+  });
+  return p?p:false;
+};
+/**
+ * @Author: Training
+ * @desc 删除节点 (待实现...)
+ * @params val
+ */
+SearchTree.prototype.remove = function(val){
+
+};
+
+/****************************************************************************************************************
+ * @Author:                                            Training                                                 *
+ * @desc                实现一个堆    具体堆排序怎么做呢? 从堆中依次拉去堆顶值                                  *
+ ***************************************************************************************************************/
+/**
+ * @Author: Training
+ * @desc 给数组添加了一个方法,调换数组某两个元素的位置
+ * @params a,b   两个位置的下标
+ */
+Array.prototype.swap = function(a,b){
+  let temp = this[a];
+  this[a] = this[b];
+  this[b] = temp;
+}
+/**
+ * @author Training
+ * @desc 堆的实现,
+ *    堆,总是一个完全二叉树
+ *    任意节点小于（或大于）它的所有后裔，最小元（或最大元）在堆的根上（堆序性）。
+ * @param type  堆的类型:最大堆 1  最小堆 0
+ * @constructor
+ */
+function Heap(type = 1){
+  this.type = type;
+  this.root = new Array(1000);
+  this.root[0] = 0;
+}
+Heap.prototype.insert = function(val){
+  this.root[0] ++;
+  this.root[this.root[0]] = val;
+  if (this.root[0] !== 1) this.formatHeap();
+};
+/**
+ * @Author: Training
+ * @desc 格式化插入数据
+ *    具体思路如下,每当插入一个数据,则插入到堆的最底部
+ *    然后依次与父节点进行对比,如果符合当前规则(最大堆或者最小堆)
+ *    则不作任何操作,若不符合规则,调换位置,再继续之前步骤
+ */
+Heap.prototype.formatHeap = function(){
+  let size = this.root[0],
+    pp = Math.floor(size/2),
+    type = this.type;
+  if (type) {
+
+    while (this.root[size] > this.root[pp]) {
+      this.root.swap(size,pp);
+      size = pp;
+      pp = Math.floor(size/2) || 1;
+    }
+  }else{
+    while (this.root[size] < this.root[pp]) {
+      this.root.swap(size,pp);
+      size = pp;
+      pp = Math.floor(size/2) || 1;
+    }
+  }
+};
+/**
+ * @Author: Training
+ * @desc 删除数据  堆的删除只能删除堆顶,然后再进行堆化  具体思路如下:
+ *    为了保持堆依旧是一个完全二叉树(每层的数据是满的,叶子数据必须靠左,具体请google)
+ *    所以,使用堆底最后一个数据,替换堆顶数据,然后对堆进行堆化,使其满足最大堆、最小堆的特性；
+ *    以最小堆为例： 每一层的数据一定小于子层所有的数据，先和第二次左边的一次次比较，将换上来的数据
+ *    放入到正确的位置，然后再将当前堆顶（这里必定是原第二层的左侧位置的数据）和第二次右侧的位置数据进行比较，
+ *    若右侧小于当前位置，则更换位置;
+ */
+Heap.prototype.remove = function(){
+  let size = this.root[0],
+    p = 1,
+    pc = p*2;
+  if (size <= 0) return;
+  this.root[1] = this.root[size];
+  this.root[size] = null;
+  this.root[0]--;
+  if (this.type) {
+    while (true){
+      let max = this.root[pc]>=this.root[pc+1]?pc:pc+1;
+      if (this.root[p] < this.root[max]) {
+        this.root.swap(p,max);
+        p = max;
+        pc *=2;
+      }else {
+        break;
+      }
+    }
+  }else{
+    while (true){
+      let max = this.root[pc]<=this.root[pc+1]?pc:pc+1;
+      if (this.root[p] > this.root[max]) {
+        this.root.swap(p,max);
+        p = max;
+        pc *=2;
+      }else {
+        break;
+      }
+    }
+  }
+
+};
+/**
+ * @Author: Training
+ * @desc  批量插入数据
+ * @params array  数据组
+ */
+Heap.prototype.insertMore = function(array){
+  if (typeof array !== "object") throw new Error("数据类型错误: 请输入正确的数组");
+  for (let i = 0, len = array.length; i < len; i++) {
+    this.insert(array[i])
   }
 };
