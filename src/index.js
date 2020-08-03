@@ -2455,3 +2455,130 @@ Heap.prototype.insertMore = function(array){
     this.insert(array[i])
   }
 };
+/**
+ * @Author: Training
+ * @desc 寻找岛屿
+ *  给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+ *  岛屿总是被水包围，并且每座岛屿只能由水平方向或竖直方向上相邻的陆地连接形成。
+ *  此外，你可以假设该网格的四条边均被水包围。
+ *  链接：https://leetcode-cn.com/problems/number-of-islands
+ *  @think ① 广度优先搜索:
+ *    若不改变原有网格 , 则新建一个标记网格, 标记是否已经搜索过;
+ *    用一个队列来储存与其有关系的网格
+ *    循环出队列, 将有关系的加入队列, 并将对应标记改为true
+ *    当队列为空时 说明一个岛屿查找完成
+ *    ② 如上 , 只是不新建标记网格, 将搜索过的直接赋值为1
+ *    ③ 递归: 将有上下左右关系的所有数据都改为0
+ *        每次递归完成 岛屿数量加一;
+ * */
+export var findLand = function(grid) {
+  let glen = grid.length; // 网格的纵向长度
+  // 特判
+  if(glen === 0) return 0;
+  let clen = grid[0].length; // 网格的横向长度；
+  let verticle = [[-1,0],[0,1],[1,0],[0,-1]]; // 方向  上右下左
+  /*
+  // 方法①
+  let markeds = grid.map((item,index)=>{
+    let c = [];
+    for(let i = 0;i<clen;i++){
+      c[i] = false;
+    }
+    return c;
+  }); // 添加标记*/
+  let land = 0;
+  // let queue = []; // 辅助队列方法1,2
+  // 方法③: 递归
+  let finds = function (g, x,y,row,col) {
+    if (x < 0 || x >= row || y < 0 || y >= col || g[x][y] === "0")return;
+    g[x][y] = "0";
+    finds(g,x-1,y,row,col);
+    finds(g,x,y+1,row,col);
+    finds(g,x+1,y,row,col);
+    finds(g,x,y-1,row,col)
+  };
+  for(let i = 0;i<glen;i++){
+    for(let j = 0;j<clen ;j++){
+      /*
+      //方法① 广度优先搜索
+      f(!markeds[i][j]){
+        let con = [i,j]; // 网格中的内容
+        if(grid[i][j] == "1"){queue.push(con);land++} // 若为1 则添加进队列
+        while(queue.length>0){
+          let one = queue.shift();
+          let _t = [one[0]+verticle[0][0],one[1]+verticle[0][1]],
+              _r = [one[0]+verticle[1][0],one[1]+verticle[1][1]],
+              _d = [one[0]+verticle[2][0],one[1]+verticle[2][1]],
+              _l = [one[0]+verticle[3][0],one[1]+verticle[3][1]];
+          let t = _t[0] >= 0  ? grid[_t[0]][_t[1]] : false,
+              r = _r[1] < clen ? grid[_r[0]][_r[1]] : false,
+              d = _d[0] < glen ? grid[_d[0]][_d[1]] : false,
+              l = _l[1] >= 0 ? grid[_l[0]][_l[1]] : false;
+          if( t && t != "0"){
+            if(!markeds[_t[0]][_t[1]]){
+              queue.push(_t);
+              markeds[_t[0]][_t[1]] = true;
+            }
+          }
+          if(r && r != "0"){
+            if(!markeds[_r[0]][_r[1]]){
+              queue.push(_r);
+              markeds[_r[0]][_r[1]] = true;
+            }
+          }
+          if(d && d != "0"){
+            if(!markeds[_d[0]][_d[1]]){
+              queue.push(_d);
+              markeds[_d[0]][_d[1]] = true;
+            }
+          }
+          if(l && l != "0"){
+            if(!markeds[_l[0]][_l[1]]){
+              queue.push(_l);
+              markeds[_l[0]][_l[1]] = true;
+            }
+          }
+          markeds[one[0]][one[1]] = true;
+        }
+      }*/
+        // let con = [i,j]; // 网格的内容标记下标 方法1 2
+        if(grid[i][j] == "1"){
+          // queue.push(con); 方法1 2
+          land++;
+          finds(grid,i,j,glen,clen)
+          /*
+          // 方法② 优化版广度优先搜索
+          while(queue.length>0){
+            let one = queue.shift();
+            let _t = [one[0]+verticle[0][0],one[1]+verticle[0][1]],
+                _r = [one[0]+verticle[1][0],one[1]+verticle[1][1]],
+                _d = [one[0]+verticle[2][0],one[1]+verticle[2][1]],
+                _l = [one[0]+verticle[3][0],one[1]+verticle[3][1]];
+            let t = _t[0] >= 0  ? grid[_t[0]][_t[1]] : false,
+                r = _r[1] < clen ? grid[_r[0]][_r[1]] : false,
+                d = _d[0] < glen ? grid[_d[0]][_d[1]] : false,
+                l = _l[1] >= 0 ? grid[_l[0]][_l[1]] : false;
+            if( t && t != "0"){
+              queue.push(_t);
+              grid[_t[0]][_t[1]] = "0";
+            }
+            if(r && r != "0"){
+                queue.push(_r);
+              grid[_r[0]][_r[1]] = "0";
+
+            }
+            if(d && d != "0"){
+                queue.push(_d);
+              grid[_d[0]][_d[1]] = "0";
+            }
+            if(l && l != "0"){
+                queue.push(_l);
+              grid[_l[0]][_l[1]] = "0";
+            }
+            grid[one[0]][one[1]] = "0";
+          }*/
+        } // 若为1 则添加进队列
+    }
+  }
+  return land;
+};

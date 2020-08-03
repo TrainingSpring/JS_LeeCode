@@ -29,7 +29,8 @@ import {
   MyCircularQueue,
   searchLastLessEqualK,
   MyLinkedList,
-  reverseList, bubsort, insSort, selsort, merageSort, sqSort
+  reverseList, bubsort, insSort, selsort, merageSort, sqSort,
+  findLand
 } from "../src";
 
 // test('for循环数据',()=>{
@@ -183,3 +184,6 @@ test("循环队列",()=>{
 // test("查找有序数组中小于等于k的值的下标",()=>{
 //   expect(searchLastLessEqualK([0,1,2,3,4,5,6,7,8,9,10],5.6)).toBe(5)
 // });
+test("寻找陆地",()=>{
+   expect(findLand([["1","1","0","0","0"],["1","1","0","0","0"],["0","0","1","0","0"],["0","0","0","1","1"]])).toBe(3)
+});
