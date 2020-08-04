@@ -2582,3 +2582,102 @@ export var findLand = function(grid) {
   }
   return land;
 };
+/**
+ *
+ * @param deadends   死亡数字, 不可触碰
+ * @param target     目标密码
+ * @returns {number}  最短次数
+ * @think
+ */
+export let openLock = function (deadends, target) {
+    if (target == null || target === "0000") return -1; // 边沿判定
+    let v = new Set();  // Set对象... 因为Set对象不会储存重复数据
+    let queue = []; // 辅助队列
+    let step = 0;  // 步数
+    let start = "0000"; // 开始数据
+
+    queue.push(start); // 将开始数据加入队列
+    v.add(start);   // 并加入Set对象中
+  /**
+   *
+   * @param n 目标数据
+   * @desc 返回数据能旋转的的各种可能:
+   *    如: 0000->
+   *      1000,9000,0100,0900,0010,0090,0001,0009
+   * @returns {Array}
+   */
+    let getNext = function (n) {
+        let res = []; // 最终结果数组 如@desc中
+        for (let i = 0; i < 4; i++) {  // 对字符串中的每个数据进行操作
+            let StrToArrayPrev = n.split("");
+            let StrToArrayNext = Object.assign([],StrToArrayPrev);
+            let num = parseInt(n[i]);
+            let prev =  num === 0 ? 9 : num - 1; // 往上旋转: 若当前数据为0, 则转到9 否则减一
+            let next = num === 9 ? 0 : num + 1; // 往下同理
+            StrToArrayPrev[i] = prev;
+            StrToArrayNext[i] = next;
+            res.push(StrToArrayPrev.join().replace(/\,/g,''));
+            res.push(StrToArrayNext.join().replace(/\,/g,''));
+        }
+        return res;
+    };
+    // 开始广度优先搜索
+    while(queue.length>0){
+        // 取出队列中的值 一层一层的取
+        // 比如: 第一层是: 0000 第二层是 1000,9000,0100,0900,0010,0090,0001,0009
+        // 则: 第一层取一个 然后获取此数据的轮转可能然后加入队列,以及Set对象中, 并判定Set对象中是否存在, 若存在则不加入队列(避免死循环)
+        // 然后寻找第二层, 以此类推 有死亡数据的缘故, 要做一些判定
+        // 最终层数就是step步数;
+        for (let i = 0, qlen = queue.length; i < qlen; i++) {
+            let t = queue.shift(); // 取队列中的数
+            if (t === target) { // 若取出的数据和目标数据相同, 则返回操作的步数(层数)
+                return step;
+            }
+            let next = getNext(t); // 获取与取出数据能组成可能的数据
+            for (let j = 0, nlen = next.length; j < nlen; j++) { // 循环遍历每一个可能数据
+              let hasVal = v.has(next[j]); // 判断Set中是否存在此数据
+              let isDead = false; // 是否是死亡数据
+              for (let d = 0, dlen = deadends.length; d < dlen; d++) {
+                if (next[j] === deadends[d]) isDead = true; // 判断是否是死亡数据, 若是则isDead赋值为true
+                if (deadends[d] === "0000") return -1; // 边沿判断 判断死亡数数据中是否有0000 有则直接返回-1;
+              }
+              if (!hasVal && !isDead) { // 如果既不是死亡数据也不是以遍历过的数据
+                v.add(next[j]); // 则将此数据加入Set
+                queue.push(next[j]); // 并加入队列
+              }
+            }
+        }
+      step++ // 操作步数(层数)+1
+    }
+    // 若最终都没有办法走到目标数据: 返回-1
+    return -1;
+};
+/**
+* @Author: Training
+* @Desc : 给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+* @Params: n 
+* @Think : 
+*/
+export var numSquares = function(n) {
+  if (n === 0)return 0;
+  else if ( n === 1) return 1;
+  let queue = [];
+  let step = 0;
+  queue.push(n);
+  while(queue.length>0){
+    for (let i = 1,qLen = queue.length; i <= qLen; i++) {
+      let num = queue.shift();
+      let max = Math.floor(Math.sqrt(num));
+      for (let j = max; j > 0; j --) {
+        let val = num - j ** 2;
+        if ( val > 0){
+          queue.push(val);
+        } else if ( val === 0){
+          return ++step;
+        }
+      }
+    }
+    // console.log(queue);
+    step++;
+  }
+};
